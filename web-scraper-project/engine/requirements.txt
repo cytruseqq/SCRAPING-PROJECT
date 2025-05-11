@@ -1,0 +1,4 @@
+flask
+aiohttp
+beautifulsoup4
+pymongo

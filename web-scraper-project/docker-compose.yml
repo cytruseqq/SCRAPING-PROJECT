@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  mongo: #Baza danych, przechowująca scrapy w MongoDB
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  engine: #Silnik do scrapowania na którym obecnie pracujemy
+    build: ./engine
+    container_name: engine
+    restart: always
+    depends_on:
+      - mongo
+    ports:
+      - "5001:5001"
+
+  flask_ui: #Interfejs użytkownika oparty na flasku
+    build: ./ui
+    container_name: flask_ui
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - engine
+
+volumes:
+  mongo_data:

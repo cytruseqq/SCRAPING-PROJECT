@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Scraper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🌐 Web Scraper</h1>
+        <textarea id="urls" placeholder="Wklej linki, jeden na linię..."></textarea>
+        <button onclick="startScraping()">Zacznij scrapowanie!</button>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        async function startScraping() {
+            const urlsInput = document.getElementById('urls').value.trim();
+            const status = document.getElementById('status');
+
+            if (!urlsInput) {
+                status.innerText = "❌ Podaj chociaż jeden URL.";
+                return;
+            }
+
+            const urls = urlsInput.split('\n').map(u => u.trim()).filter(u => u);
+
+            status.innerText = "⏳ Scraping trwa...";
+
+            try {
+                const response = await fetch("/run", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ urls })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    status.innerText = "✅ " + result.message;
+                } else {
+                    status.innerText = "❌ Błąd: " + result.message;
+                }
+            } catch (e) {
+                status.innerText = "❌ Błąd połączenia z serwerem.";
+            }
+        }
+    </script>
+</body>
+</html>
